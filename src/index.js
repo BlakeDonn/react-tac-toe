@@ -43,19 +43,18 @@ class Board extends React.Component {
         );
     }
 }
-class Game extends React.Component {
-    constructor(props) {
+class Game extends React.Component{  
+    constructor(props) {  
         super(props);
-        this.state = {
-            //original state as far as I can tell
+        this.state = {  //original state as far as I can tell
             history: [
                 {
                     squares: Array(9).fill(null),
+                    placement: Array(9).fill(null),
                 },
             ],
             stepNumber: 0,
             xIsNext: true,
-            isTargeted: null,
         };
     }
     handleClick(i) {
@@ -66,11 +65,11 @@ class Game extends React.Component {
             return;
         }
         squares[i] = this.state.xIsNext ? "X" : "O";
-        this.setState({
-            history: history.concat([
-                //rewriting history
+        this.setState({        
+            history: history.concat([   //rewriting history
                 {
                     squares: squares,
+                    placement: determineLocation(i),
                 },
             ]),
             stepNumber: history.length,
@@ -78,10 +77,8 @@ class Game extends React.Component {
             boardLocation: i,
         });
     }
-    jumpTo(step, desc) {
-        //adjusting stepNumber and xIsNext
+    jumpTo(step) {      //adjusting stepNumber and xIsNext
         this.setState({
-            isTargeted: step,
             stepNumber: step,
             xIsNext: step % 2 === 0,
         });
@@ -90,14 +87,12 @@ class Game extends React.Component {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
-        const boardPlacement = determineLocation(this.state.boardLocation);
+        const boardPlacement  = [].concat(determineLocation(this.state.boardLocation))
         const moves = history.map((step, move) => {
-            const desc = move                 ? 
-                ? "Go to move #" + move + ` ${boardPlacement}`
-                : "Go to game start";
+            const desc = move ? "Go to move #" + move + ` ${this.state.history[move].placement}`: "Go to game start";
             return (
-                <li key={move} id = {move}>
-                    <button onClick={() => this.jumpTo(move, desc)}>{desc}</button>
+                <li key={move}>
+                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
                 </li>
             );
         });
@@ -124,10 +119,10 @@ class Game extends React.Component {
         );
     }
 }
-function determineLocation(spot) {
-    let column = spot < 3 ? 1 : spot < 6 ? 2 : 3;
-    let row = spot % 3 === 0 ? 1 : [1, 4, 7].includes(spot) ? 2 : 3;
-    return `column ${column} row ${row}`;
+function determineLocation(spot){
+    let column = spot < 3 ? 1 : spot < 6 ? 2 : 3 ;
+    let row = spot % 3 === 0 ? 1 : [1,4,7].includes(spot) ? 2 : 3;
+    return `column ${column} row ${row}`
 }
 
 function calculateWinner(squares) {
